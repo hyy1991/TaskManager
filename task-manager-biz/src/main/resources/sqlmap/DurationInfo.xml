@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+        "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<sqlMap namespace="DurationInfo">
+    <typeAlias alias="DurationData" type="com.yu.taskmanager.api.datas.DurationData"/>
+    <resultMap id="durationData" class="DurationData">
+        <result property="startTime" column="StartTime"/>
+        <result property="endTime" column="EndTime"/>
+        <result property="consumingHour" column="ConsumingHour"/>
+        <result property="outBizId" column="OutBizID"/>
+        <result property="genre" column="Genre"/>
+    </resultMap>
+
+    <insert id="addDuration" parameterClass="map">
+        INSERT INTO DURATION_INFO
+        (StartTime, EndTime, ConsumingHour, OutBizID, Genre)
+        VALUES
+        (#duration.startTime#, #duration.endTime#, #duration.consumingHour#,
+         #duration.outBizId#, #duration.genre#)
+    </insert>
+
+    <select id="loadDuration" parameterClass="map" resultMap="durationData">
+        SELECT
+        StartTime, EndTime, ConsumingHour, OutBizID, Genre
+        FROM DURATION_INFO
+        WHERE
+        OutBizID = #outBizId#
+        AND
+        Genre = #genre#
+    </select>
+
+    <delete id="delDuration" parameterClass="map">
+        DELETE FROM DURATION_INFO
+        WHERE OutBizID = #outBizId#
+    </delete>
+
+    <update id="updateHour" parameterClass="map">
+        UPDATE DURATION_INFO
+        SET ConsumingHour = #hour#
+        WHERE OutBizID = #outBizId#
+        AND Genre = #genre#
+    </update>
+
+    <update id="increaseHour" parameterClass="map">
+        UPDATE DURATION_INFO
+        SET ConsumingHour = ConsumingHour + #hour#
+        WHERE OutBizID = #outBizId#
+        AND Genre = #genre#
+    </update>
+</sqlMap>

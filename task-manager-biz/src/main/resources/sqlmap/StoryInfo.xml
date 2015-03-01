@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+        "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<sqlMap namespace="StoryInfo">
+
+    <typeAlias alias="StoryData" type="com.yu.taskmanager.api.datas.StoryData"/>
+    <resultMap id="storyData" class="StoryData">
+        <result property="serialNo" column="SerialNo"/>
+        <result property="summary" column="Summary"/>
+        <result property="content" column="Content"/>
+        <result property="priority" column="Priority"/>
+        <result property="importance" column="Importance"/>
+        <result property="status" column="Status"/>
+        <result property="todoWeek" column="TodoWeek"/>
+        <result property="addTime" column="AddTime"/>
+        <result property="memo" column="Memo"/>
+    </resultMap>
+    
+    <insert id="addStory" parameterClass="map">
+        INSERT INTO STORY_INFO
+        (
+        SerialNo, Summary, Content, Priority, Importance, Status,
+        TodoWeek, AddTime, Memo
+        )
+        VALUES 
+        (
+        #storyData.serialNo#,
+        #storyData.summary#,
+        #storyData.content#,
+        #storyData.priority#,
+        #storyData.importance#,
+        #storyData.status#,
+        #storyData.todoWeek#,
+        #storyData.addTime#,
+        #storyData.memo#
+        )
+    </insert>
+
+    <select id="findTodoStoryList" parameterClass="map" resultMap="storyData">
+        SELECT
+        SerialNo, Summary, Content, Priority, Importance, Status,
+        TodoWeek, AddTime, Memo
+        FROM STORY_INFO
+        WHERE TodoWeek = #todoWeek#
+        AND Status != 1
+        ORDER BY Priority
+    </select>
+
+    <select id="paginateInitStory" parameterClass="map" resultMap="storyData">
+        SELECT
+        SerialNo, Summary, Content, Priority, Importance, Status,
+        TodoWeek, AddTime, Memo
+        FROM STORY_INFO
+        WHERE Status = 1
+        ORDER BY Importance DESC, DATETIME(AddTime)
+        LIMIT #start#, #pageSize#
+    </select>
+
+    <select id="paginateInitStory_COUNT" resultClass="int">
+        SELECT COUNT(*)
+        FROM STORY_INFO
+        WHERE Status = 1
+    </select>
+
+    <select id="loadTodoCount" parameterClass="map" resultClass="int">
+        SELECT COUNT(*)
+        FROM STORY_INFO
+        WHERE TodoWeek = #todoWeek#
+        AND Status != 1
+    </select>
+
+    <select id="loadStory" parameterClass="map" resultMap="storyData">
+        SELECT
+        SerialNo, Summary, Content, Priority, Importance, Status,
+        TodoWeek, AddTime, Memo
+        FROM STORY_INFO
+        WHERE SerialNo = #serialNo#
+    </select>
+    
+    <delete id="delStory" parameterClass="map">
+        DELETE FROM STORY_INFO
+        WHERE SerialNo = #serialNo#
+    </delete>
+    
+    <update id="updatePriority" parameterClass="map">
+        UPDATE STORY_INFO
+        SET Priority = #priority#
+        WHERE SerialNo = #serialNo#
+    </update>
+
+    <update id="updateImportance" parameterClass="map">
+        UPDATE STORY_INFO
+        SET Importance = #importance#
+        WHERE SerialNo = #serialNo#
+    </update>
+
+    <update id="updateStatus" parameterClass="map">
+        UPDATE STORY_INFO
+        SET Status = #status#
+        WHERE SerialNo = #serialNo#
+    </update>
+
+    <update id="updateStatusAndTodoWeek" parameterClass="map">
+        UPDATE STORY_INFO
+        SET Status = #status#, TodoWeek = #todoWeek#
+        WHERE SerialNo = #serialNo#
+    </update>
+</sqlMap>

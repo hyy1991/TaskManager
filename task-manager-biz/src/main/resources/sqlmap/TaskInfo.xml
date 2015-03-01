@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+        "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<sqlMap namespace="TaskInfo">
+
+    <typeAlias alias="TaskData" type="com.yu.taskmanager.api.datas.TaskData"/>
+    <resultMap id="taskData" class="TaskData">
+        <result property="serialNo" column="SerialNo"/>
+        <result property="content" column="Content"/>
+        <result property="storyNo" column="StoryNo"/>
+        <result property="sequence" column="Sequence"/>
+        <result property="status" column="Status"/>
+        <result property="memo" column="Memo"/>
+    </resultMap>
+
+    <insert id="addTask" parameterClass="map">
+        INSERT INTO TASK_INFO
+        (SerialNo, Content, StoryNo, Sequence, Status, Memo)
+        VALUES
+        (#taskData.serialNo#, #taskData.content#, #taskData.storyNo#,
+         #taskData.sequence#, #taskData.status#, #taskData.memo#)
+    </insert>
+
+    <select id="findAllTaskWithStory" parameterClass="map" resultMap="taskData">
+        SELECT
+        SerialNo, Content, StoryNo, Sequence, Status, Memo
+        FROM TASK_INFO
+        WHERE
+        StoryNo = #storyNo#
+        ORDER BY Sequence
+    </select>
+
+    <select id="loadTask" parameterClass="map" resultMap="taskData">
+        SELECT
+        SerialNo, Content, StoryNo, Sequence, Status, Memo
+        FROM TASK_INFO
+        WHERE
+        SerialNo = #taskNo#
+    </select>
+
+    <select id="loadTaskCountByStory" parameterClass="map" resultClass="int">
+        SELECT COUNT(*)
+        FROM TASK_INFO
+        WHERE
+        StoryNo = #storyNo#
+    </select>
+
+    <delete id="delTask" parameterClass="map">
+        DELETE FROM TASK_INFO
+        WHERE SerialNo = #serialNo#
+    </delete>
+
+    <delete id="delTaskByStory" parameterClass="map">
+        DELETE FROM TASK_INFO
+        WHERE StoryNo = #storyNo#
+    </delete>
+
+    <update id="updateSequence" parameterClass="map">
+        UPDATE TASK_INFO
+        SET Sequence = #sequence#
+        WHERE SerialNo = #serialNo#
+    </update>
+
+    <update id="updateStatus" parameterClass="map">
+        UPDATE TASK_INFO
+        SET Status = #status#
+        WHERE SerialNo = #serialNo#
+    </update>
+</sqlMap>
